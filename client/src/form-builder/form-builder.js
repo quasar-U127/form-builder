@@ -1,9 +1,10 @@
 import React from "react"
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
 function CheckboxBuilder({ field_name, template, change_handler }) {
-    
+
     return (
         <Form.Check
             type="checkbox"
@@ -76,6 +77,11 @@ function ElementBuilder({ field_name, template, change_handler }) {
 }
 
 function FormBuilder({ template, change_handler, submit_handler }) {
+    if (template === null || template == {})
+        return <></>
+    if (template.templateId === null || template.templateId === "")
+        return <></>
+    console.log(template)
     const dict_items = Object.entries(template.templateFields).map(
         ([field_name, input_template]) =>
             <ElementBuilder
@@ -85,12 +91,17 @@ function FormBuilder({ template, change_handler, submit_handler }) {
             />
     )
     return (
-        <Form>
-            {dict_items}
-            <Button variant="primary" onClick={submit_handler}>
-                Submit
-            </Button>
-        </Form>
+        <Card>
+            <Card.Body>
+
+                <Form border="primary">
+                    {dict_items}
+                    <Button variant="primary" onClick={submit_handler}>
+                        Submit
+                    </Button>
+                </Form>
+            </Card.Body>
+        </Card>
     )
 
 }

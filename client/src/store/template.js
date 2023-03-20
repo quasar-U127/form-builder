@@ -6,8 +6,8 @@ export function GetTemplateIds() {
         .then((res) => res.json())
 }
 export function GetTemplate(id) {
-    if (id == "")
-        return Promise.resolve({})
+    if (id === null)
+        return Promise.resolve("")
     return fetch(ServerAddress.concat("/api/template/", id))
         .then((res) => res.json()
             .then(
