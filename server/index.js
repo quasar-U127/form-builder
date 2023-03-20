@@ -4,7 +4,7 @@ const mongoose = require("mongoose") // new
 const routes = require("./routes")
 // Connect to MongoDB database
 mongoose
-    .connect("mongodb://localhost:27017/sources", { useNewUrlParser: true })
+    .connect("mongodb://db:27017/sources", { useNewUrlParser: true })
     .then(() => {
         const app = express()
         app.use(cors());

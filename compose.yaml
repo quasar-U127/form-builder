@@ -1,0 +1,19 @@
+services:
+  frontend:
+    image: source-creator/client
+    build: client
+    ports:
+      - "3000:3000"
+    links:
+      - backend:backend
+
+  backend:
+    image: source-creator/server
+    build: server
+    links:
+      - mongodb:db
+    ports:
+      - "5000:5000"
+
+  mongodb:
+    image: mongo
