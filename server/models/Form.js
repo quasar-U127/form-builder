@@ -1,10 +1,6 @@
 const mongoose = require('mongoose')
 
 const FormSchema = new mongoose.Schema({
-    formId: {
-        type: String,
-        required: true,
-    },
     formType: {
         type: String,
         required: true,

@@ -5,7 +5,7 @@ const Template = require("./models/Template")
 const router = express.Router()
 
 router.post("/admin/create", async (req, res) => {
-    console.log(req.body)
+    
     const template = new Template(
         {
             templateId: req.body.templateId,
@@ -51,16 +51,15 @@ router.get("/templates", async (req, res) => {
 
 router.get("/template/:id", async (req, res) => get_template(req, res))
 
-// router.post("/form", async (req, res) => {
-//     const form = new Form(
-//         {
-//             formId: req.body.id,
-//             formType: req.body.type,
-//             formData: req.body.data,
-//             createdAt: req.body.date
-//         }
-//     )
-//     await form.save()
-//     res.send(form)
-// })
+router.post("/user/form", async (req, res) => {
+    console.log(req.body)
+    const form = new Form(
+        {
+            formType: req.body.type,
+            formData: JSON.stringify(req.body.data)
+        }
+    )
+    await form.save()
+    res.send(form)
+})
 module.exports = router

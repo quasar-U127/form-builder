@@ -1,15 +1,19 @@
 import React from "react"
 import FormBuilder from "./form-builder/form-builder"
 import { GetTemplateIds, GetTemplate} from "./store/template"
+import { StoreFormData } from "./store/form";
 import Dropdown from 'react-bootstrap/Dropdown';
 
 function UserPage() {
+    const [response, setResponse] = React.useState([]);
     const [templateIds, setTemplateIds] = React.useState([]);
     const [currentTemplateId, setCurrentTemplateId] = React.useState("source1");
     const [currentTemplate, setCurrentTemplate] = React.useState({
         templateId:"",
         templateFields:{}
     });
+
+    
 
     const [form_data, set_form_data] = React.useState({})
 
@@ -26,7 +30,9 @@ function UserPage() {
         GetTemplate(currentTemplateId)
             .then((data) => {
                 setCurrentTemplate(data)
+                set_form_data({ ...form_data, ["type"]: currentTemplateId })
             });
+
 
     }, [currentTemplateId]);
 
@@ -40,9 +46,10 @@ function UserPage() {
         set_form_data({ ...form_data, [key]: value })
     }
     function submit_handler(e) {
-        // const key = e.target.name;
-        // const value = e.target.value;
-        // set_form_data({ ...form_data, [key]: value })
+        StoreFormData(form_data)
+            .then((data) => {
+                setResponse(data)
+            });
         console.log(form_data)
     }
 
