@@ -3,14 +3,48 @@ import FormBuilder from "./form-builder/form-builder"
 import { GetTemplateIds, GetTemplate } from "./store/template"
 import { StoreFormData } from "./store/form";
 import Form from 'react-bootstrap/Form';
-import Dropdown from 'react-bootstrap/Dropdown';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Toast from 'react-bootstrap/Toast';
 
+import { verifyData } from "./utils";
+
+
+
+
+
+function Response({ response, show, responseCloser }) {
+
+    var variant = "success"
+    if (!response.clientVerified) {
+        variant = "warning"
+    }
+    if (response.errors > 0) {
+        variant = "danger"
+    }
+
+    return (
+        <Row>
+            <Col md={6} className="mb-2">
+                <Toast show={show} onClose={responseCloser} bg={variant}>
+                    <Toast.Header>
+                        <img
+                            src="holder.js/20x20?text=%20"
+                            className="rounded me-2"
+                            alt=""
+                        />
+                        <strong className="me-auto">Response</strong>
+                    </Toast.Header>
+                    <Toast.Body>{response.message}</Toast.Body>
+                </Toast>
+            </Col>
+        </Row>
+    );
+}
 
 function UserPage() {
     const emptyTemplate = {
@@ -21,18 +55,24 @@ function UserPage() {
     const [templateIds, setTemplateIds] = React.useState([]);
     const [currentTemplateId, setCurrentTemplateId] = React.useState(null);
     const [currentTemplate, setCurrentTemplate] = React.useState(emptyTemplate);
-
+    const [showResponse, setShowResponse] = React.useState(false);
 
 
     const [form_data, set_form_data] = React.useState({})
+    const toggleShowResponse = () => setShowResponse(!showResponse);
 
     React.useEffect(() => {
         GetTemplateIds()
             .then((data) => {
                 setTemplateIds(data)
             });
-
+        setShowResponse(false)
     }, []);
+
+
+    React.useEffect(() => {
+        setShowResponse(true)
+    }, [response])
 
     React.useEffect(() => {
         if (currentTemplateId === null) {
@@ -59,11 +99,17 @@ function UserPage() {
         set_form_data({ ...form_data, [key]: value })
     }
     function submit_handler(e) {
-        StoreFormData(form_data)
-            .then((data) => {
-                setResponse(data)
-            });
-        console.log(form_data)
+        var verifierResponse = verifyData(currentTemplate.templateFields, form_data)
+        console.log(verifierResponse)
+        if (verifierResponse.clientVerified) {
+            StoreFormData(form_data)
+                .then((data) => {
+                    setResponse({ ...data, clientVerified: true })
+                });
+        } else {
+            setResponse(verifierResponse)
+        }
+        console.log(response)
     }
 
 
@@ -97,6 +143,14 @@ function UserPage() {
                             change_handler={change_handler}
                             submit_handler={submit_handler}
                         />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <Response
+                            response={response}
+                            show={showResponse}
+                            responseCloser={toggleShowResponse} />
                     </Col>
                 </Row>
             </Container>

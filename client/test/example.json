@@ -1,0 +1,33 @@
+{
+    "templateId": "source1",
+    "templateFields": {
+        "apiKey": {
+            "type": "input",
+            "label": "API key",
+            "regexErrorMessage": "Invalid api key",
+            "placeholder": "e.g: 1234asdf",
+            "regex": "[a-z0-9]",
+            "required": true
+        },
+        "useHTTP": {
+            "type": "checkbox",
+            "required": false,
+            "label": "Enable HTTP"
+        },
+        "category": {
+            "type": "singleSelect",
+            "label": "Select category",
+            "required": true,
+            "options": [
+                {
+                    "label": "Android",
+                    "value": "android"
+                },
+                {
+                    "label": "IOS",
+                    "value": "ios"
+                }
+            ]
+        }
+    }
+}

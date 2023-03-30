@@ -1,7 +1,6 @@
 import React from "react";
 
 import { GetTemplateIds, GetTemplate, CreateTemplate } from "./store/template"
-import Dropdown from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Nav from 'react-bootstrap/Nav';
@@ -10,23 +9,70 @@ import Container from 'react-bootstrap/Container';
 
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Toast from 'react-bootstrap/Toast';
+
+import { TemplateVerifier } from "./utils";
 
 
+function Response({ response, show, responseCloser }) {
+
+    if (response.empty)
+        return <></>
+
+    var variant = "success"
+    if (!response.clientVerified) {
+        variant = "warning"
+    }
+    if (response.errors > 0) {
+        variant = "danger"
+    }
+
+    return (
+        <Row>
+            <Col md={6} className="mb-2">
+                <Toast show={show} onClose={responseCloser} bg={variant}>
+                    <Toast.Header>
+                        <img
+                            src="holder.js/20x20?text=%20"
+                            className="rounded me-2"
+                            alt=""
+                        />
+                        <strong className="me-auto">Response</strong>
+                    </Toast.Header>
+                    <Toast.Body>{response.message}</Toast.Body>
+                </Toast>
+            </Col>
+        </Row>
+    );
+}
 
 
-function TemplateEditor({ text ,templateIds}) {
+function TemplateEditor({ text, templateIds }) {
     // Verify if the new json template is valid or not
-    
-    const [editorText,setEditorText] = React.useState("")
-    const [res, setRes] = React.useState(null)
+
+    const [editorText, setEditorText] = React.useState(text && JSON.stringify(text, null, 2))
+    const [response, setResponse] = React.useState({ empty: true })
+
+    const [showResponse, setShowResponse] = React.useState(false);
+
+    const toggleShowResponse = () => setShowResponse(!showResponse);
+
     function handleEditorChange(e) {
         setEditorText(e.target.value)
     }
+    React.useEffect(() => {
+        setShowResponse(true)
+    }, [response])
     function handleSubmit() {
-        CreateTemplate(editorText)
-            .then((data) => {
-                setRes(data)
-            });
+        const verification = TemplateVerifier(editorText)
+        if (!verification.clientVerified) {
+            setResponse(verification)
+
+        } else
+            CreateTemplate(editorText)
+                .then((data) => {
+                    setResponse(data)
+                });
     }
 
     return (
@@ -34,14 +80,18 @@ function TemplateEditor({ text ,templateIds}) {
 
             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                 <Form.Label>Template</Form.Label>
-                <Form.Control as="textarea" rows={20} defaultValue={text && JSON.stringify(text, null, 3)} className="font-monospace" name="editor" onChange={handleEditorChange} />
+                <Form.Control as="textarea" rows={20} defaultValue={text && JSON.stringify(text, null, 2)} className="font-monospace" name="editor" onChange={handleEditorChange} />
             </Form.Group>
             <center>
                 <Button variant="primary" onClick={handleSubmit}>
                     Submit
                 </Button>
             </center>
-            <pre>{res?JSON.stringify(res, null, 2):null}</pre>
+            <Response
+                response={response}
+                show={showResponse}
+                responseCloser={toggleShowResponse} />
+            {/* <pre>{response ? JSON.stringify(response, null, 2) : null}</pre> */}
         </Form>
     )
 }

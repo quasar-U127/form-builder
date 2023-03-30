@@ -4,17 +4,46 @@ const User = require("./models/User")
 const Template = require("./models/Template")
 const router = express.Router()
 
-router.post("/admin/create", async (req, res) => {
-    
-    const template = new Template(
-        {
-            templateId: req.body.templateId,
-            templateFields: JSON.stringify(req.body.templateFields)
-        }
-    )
-    await template.save()
-    res.send(template)
+router.get("/admin/create", async (req, res) => {
+
+    res.send("End point for creating new templates. Visit /admin/:id /templateId /templates /template/:id /user/form also")
+
 })
+
+router.post("/admin/create", async (req, res) => {
+
+    const templateId = req.body.templateId
+    var found = false
+
+    try {
+        const template = await Template.findOne({ templateId: templateId })
+        console.log(template)
+        if (template !== null)
+            found = true
+
+    } catch {
+    }
+    if (found) {
+        res.status(403)
+        res.send({ errors: 1, message: "Cannot save " + templateId + ", it already exists" })
+    } else {
+        const template = new Template(
+            {
+                templateId: templateId,
+                templateFields: JSON.stringify(req.body.templateFields)
+            }
+        )
+        await template.save()
+        res.status(200)
+        res.send({
+            errors: 0,
+            message: "Successfully stored " + templateId
+        })
+    }
+
+
+})
+
 
 
 async function get_template(req, res) {
@@ -60,6 +89,9 @@ router.post("/user/form", async (req, res) => {
         }
     )
     await form.save()
-    res.send(form)
+    res.send({
+        errors: 0,
+        message: "Stored successfully"
+    })
 })
 module.exports = router

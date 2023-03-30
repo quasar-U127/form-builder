@@ -38,7 +38,7 @@ function InputBuilder({ field_name, template, change_handler }) {
     return (
         <Form.Group className="mb-3" controlId={field_name}>
             <Form.Label>{template.label}</Form.Label>
-            <Form.Control type="text" id={field_name} name={field_name} onChange={change_handler} />
+            <Form.Control type="text" name={field_name} onChange={change_handler} placeholder={template.placeholder} />
         </Form.Group>
         // <div>
         //     <label for={field_name}>{template.label}</label>
@@ -77,11 +77,11 @@ function ElementBuilder({ field_name, template, change_handler }) {
 }
 
 function FormBuilder({ template, change_handler, submit_handler }) {
-    if (template === null || template == {})
+    if (template === null || template === {})
         return <></>
     if (template.templateId === null || template.templateId === "")
         return <></>
-    console.log(template)
+    // console.log(template)
     const dict_items = Object.entries(template.templateFields).map(
         ([field_name, input_template]) =>
             <ElementBuilder
